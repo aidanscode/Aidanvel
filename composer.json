@@ -1,0 +1,14 @@
+{
+    "name": "aidanm/aidanvel",
+    "description": "Lightweight PHP framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "AidanM",
+            "email": "amurphey7@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^3.6"
+    }
+}
