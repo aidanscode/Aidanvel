@@ -1,5 +1,66 @@
 <?php
 
+class Request {
+
+	//--------------------
+	//    Static Logic
+	//--------------------
+
+	private static $instance = null;
+
+	/**
+	 * Return the singleton instance of the Request class, containing helpful information about the request
+	 *
+	 * @return Request The singleton instance of the Request class
+	 */
+	public static function getRequest() {
+		if (self::$instance == null) {
+			$method = MethodType::fromString($_SERVER['REQUEST_METHOD']);
+			$path = cleanUriForPath($_SERVER['REQUEST_URI']);
+
+			self::$instance = new Request($method, $path);
+		}
+
+		return self::$instance;
+	}
+
+	//--------------------
+	//   Instance logic
+	//--------------------
+
+	private $method, $path;
+
+	/**
+	 * Constructor
+	 *
+	 * @param int $method The request method, using MethodType const
+	 * @param string $path The path of the request
+	 */
+	public function __construct(int $method, string $path) {
+		$this->method = $method;
+		$this->path = $path;
+	}
+
+	/**
+	 * Returns the request method
+	 *
+	 * @return int The request method, compare using MethodType const
+	 */
+	public function getMethod() {
+		return $this->method;
+	}
+
+	/**
+	 * Return the path of the request
+	 *
+	 * @return string The path of the request
+	 */
+	public function getPath() {
+		return $this->path;
+	}
+
+}
+
 class MethodType {
 
 	const GET = 0;
@@ -7,6 +68,12 @@ class MethodType {
 	const PUT = 2;
 	const DELETE = 3;
 
+	/**
+	 * Return the request method as a string
+	 *
+	 * @param int $type The request method, using RequestMethod const
+	 * @return string The request method as a string
+	 */
 	public static function toString(int $type) {
 		switch($type) {
 			case self::GET:
@@ -19,6 +86,27 @@ class MethodType {
 				return "DELETE";
 			default:
 				return "";
+		}
+	}
+
+	/**
+	 * Convert from string to request method const
+	 *
+	 * @param string $type The request method as a string
+	 * @return int The request method represented using the MethodType const
+	 */
+	public static function fromString($type) {
+		switch($type) {
+			case 'GET':
+				return MethodType::GET;
+			case 'POST':
+				return MethodType::POST;
+			case 'PUT':
+				return MethodType::PUT;
+			case 'DELETE':
+				return MethodType::DELETE;
+			default:
+				return MethodType::GET;
 		}
 	}
 

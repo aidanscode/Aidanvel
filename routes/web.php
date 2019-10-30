@@ -1,7 +1,7 @@
 <?php
 
-Route::get('/hello', 'PageController@hi')->name('pages.hi');
+Route::post('/hello', 'PageController@hi')->name('pages.hi');
 
 Route::get('/', function() {
-	return 'Welcome to the index page';
+	return view('pages.form');
 })->name('pages.index');

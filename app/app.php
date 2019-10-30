@@ -13,15 +13,21 @@ class App {
 
 	private static $instance;
 
+	/**
+	 * Initializes the application
+	 */
 	public function __construct() {
 		self::$instance = $this;
 
 		Env::init();
 	}
 
+	/**
+	 * Process the incoming request and fordward the execution to its corresponding route handler
+	 */
 	public function handleRequest() {
-		$path = cleanUriForPath($_SERVER['REQUEST_URI']);
-		$route = Route::getMatchingRoute($path);
+		$request = Request::getRequest();
+		$route = Route::getMatchingRoute($request);
 
 		if ($route != null)
 			$response = new Response($route->getAction(), 200);
