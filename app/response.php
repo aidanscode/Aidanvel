@@ -35,27 +35,27 @@ class Response {
 	 * Will send a 500 error as a response in the event of any exceptions
 	 */
 	public function send() {
-		if ($this->status != 200)
+		if ($this->status != 200) {
 			$this->sendError($this->status);
-		else {
-			try {
-				$response = null;
+			return;
+		}
+	
+		try {
+			$response = null;
 
-				if (is_string($this->action)) {
-					$func = getFunctionFromControllerReference($this->action);
-					$response = $func();
-				} else {
-					$response = ($this->action)();
-				}
-
-				//strval here rather than implied __toString through echo because
-				//we want to ensure the response properly converts to a string before we set the response code
-				$response = strval($response);
-				http_response_code($this->status);
-				echo $response;
-			} catch(Exception $e) {
-				$this->sendError(500);
+			if (is_string($this->action)) {
+				$response = (getFunctionFromControllerReference($this->action))();
+			} else {
+				$response = ($this->action)();
 			}
+
+			//strval here rather than implied __toString through echo because
+			//we want to ensure the response properly converts to a string before we set the response code
+			$response = strval($response);
+			http_response_code($this->status);
+			echo $response;
+		} catch(Exception $e) {
+			$this->sendError(500);
 		}
 	}
 
