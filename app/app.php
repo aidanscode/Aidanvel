@@ -29,9 +29,10 @@ class App {
 		$request = Request::getRequest();
 		$route = Route::getMatchingRoute($request);
 
-		if ($route != null)
+		if ($route != null) {
+			$request->setRoute($route);
 			$response = new Response($route->getAction(), 200);
-		else
+		} else
 			$response = new Response(null, 404);
 		$response->send();
 	}

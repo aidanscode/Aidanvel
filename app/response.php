@@ -39,15 +39,14 @@ class Response {
 			$this->sendError($this->status);
 			return;
 		}
-	
-		try {
-			$response = null;
 
-			if (is_string($this->action)) {
-				$response = (getFunctionFromControllerReference($this->action))();
-			} else {
-				$response = ($this->action)();
-			}
+		try {
+			if (is_string($this->action))
+				$function = getFunctionFromControllerReference($this->action);
+			else
+				$function = $this->action;
+
+			$response = callFunctionWithParameters($function, Request::getRequest()->getParameters());
 
 			//strval here rather than implied __toString through echo because
 			//we want to ensure the response properly converts to a string before we set the response code

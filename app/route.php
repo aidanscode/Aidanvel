@@ -10,14 +10,14 @@ class Route {
 	 * Declare a route with the application
 	 *
 	 * @param int $method The request method, using the MethodType const
-	 * @param string $route The request route
+	 * @param string $path The request path
 	 * @param mixed $action The action to execute upon the route being requested
 	 * @param string $name The name of the route
 	 *
 	 * @return Route A new instance of the Route class made using the given parameters
 	 */
-	private static function declareRoute(int $method, string $route, $action, $name) {
-		$route = new Route($method, $route, $action, $name);
+	private static function declareRoute(int $method, string $path, $action, $name) {
+		$route = new Route($method, $path, $action, $name);
 		self::$declaredRoutes[] = $route;
 
 		return $route;
@@ -26,53 +26,53 @@ class Route {
 	/**
 	 * Declare a GET route with the application
 	 *
-	 * @param string $route The request route
+	 * @param string $path The request path
 	 * @param mixed $action The action to execute upon the route being requested
 	 * @param string $name (OPTIONAL) The name of the route
 	 *
 	 * @return Route A new instance of the Route class made using the given parameters
 	 */
-	public static function get(string $route, $action, string $name = null) {
-		return self::declareRoute(MethodType::GET, $route, $action, $name);
+	public static function get(string $path, $action, string $name = null) {
+		return self::declareRoute(MethodType::GET, $path, $action, $name);
 	}
 
 	/**
 	 * Declare a POST route with the application
 	 *
-	 * @param string $route The request route
+	 * @param string $path The request path
 	 * @param mixed $action The action to execute upon the route being requested
 	 * @param string $name (OPTIONAL) The name of the route
 	 *
 	 * @return Route A new instance of the Route class made using the given parameters
 	 */
-	public static function post(string $route, $action, string $name = null) {
-		return self::declareRoute(MethodType::POST, $route, $action, $name);
+	public static function post(string $path, $action, string $name = null) {
+		return self::declareRoute(MethodType::POST, $path, $action, $name);
 	}
 
 	/**
 	 * Declare a PUT route with the application
 	 *
-	 * @param string $route The request route
+	 * @param string $path The request path
 	 * @param mixed $action The action to execute upon the route being requested
 	 * @param string $name (OPTIONAL) The name of the route
 	 *
 	 * @return Route A new instance of the Route class made using the given parameters
 	 */
-	public static function put(string $route, $action, string $name = null) {
-		return self::declareRoute(MethodType::PUT, $route, $action, $name);
+	public static function put(string $path, $action, string $name = null) {
+		return self::declareRoute(MethodType::PUT, $path, $action, $name);
 	}
 
 	/**
 	 * Declare a DELETE route with the application
 	 *
-	 * @param string $route The request route
+	 * @param string $path The request path
 	 * @param mixed $action The action to execute upon the route being requested
 	 * @param string $name (OPTIONAL) The name of the route
 	 *
 	 * @return Route A new instance of the Route class made using the given parameters
 	 */
-	public static function delete(string $route, $action, string $name = null) {
-		return self::declareRoute(MethodType::DELETE, $route, $action, $name);
+	public static function delete(string $path, $action, string $name = null) {
+		return self::declareRoute(MethodType::DELETE, $path, $action, $name);
 	}
 
 	/**
@@ -85,6 +85,43 @@ class Route {
 	}
 
 	/**
+	 * Return an array containing whether or not two paths match as well as the supplied parameters if they do match
+	 *
+	 * @param string $declaredRaw The declared path (part of route definition)
+	 * @param string $actualRaw The route actually called by the user
+	 * @return array An array containing whether the two paths match as well as the supplied parameters if they do match
+	 */
+	private static function getPathsMatch(string $declaredRaw, string $actualRaw) {
+		$parameters = [];
+
+		$declared = explode("/", $declaredRaw);
+		$actual = explode("/", $actualRaw);
+		if (count($declared) != count($actual))
+			return ['match' => false];
+
+		for ($i = 0; $i < count($declared); $i++) {
+			$curDeclared = $declared[$i];
+			$curActual = $actual[$i];
+
+			if (empty($curDeclared) && empty($curActual))
+				continue;
+			if (empty($curDeclared) && !empty($curActual))
+				return ['match' => false];
+
+			if ($curDeclared[0] != '{') {
+				if ($curDeclared != $curActual) {
+					return ['match' => false];
+				}
+			} else {
+				$key = substr($curDeclared, 1, strlen($curDeclared) - 2);
+				$parameters[$key] = $curActual;
+			}
+		}
+
+		return ['match' => true, 'parameters' => $parameters];
+	}
+
+	/**
 	 * Given a Request instance, returns a matching route if one exists, null otherwise
 	 *
 	 * @param Request $request The request to match with a declared route
@@ -92,8 +129,13 @@ class Route {
 	 */
 	public static function getMatchingRoute(Request $request) {
 		foreach(self::$declaredRoutes as $route) {
-			if ($route->getRoute() == $request->getPath() && $route->getMethod() == $request->getMethod())
+			$matchInfo = self::getPathsMatch($route->getPath(), $request->getPath());
+
+			if ($matchInfo['match'] && $route->getMethod() == $request->getMethod()) {
+				$request->setParameters($matchInfo['parameters']);
+
 				return $route;
+			}
 		}
 
 		return null;
@@ -102,25 +144,26 @@ class Route {
 	//--------------------
 	//   Instance logic
 	//--------------------
-	private $method, $route, $action, $name;
+	private $method, $path, $action, $name;
 
 	/**
 	 * Constructor
 	 *
 	 * @param int $method The request method, using the MethodType const
-	 * @param string $route The request route
+	 * @param string $path The request path
 	 * @param mixed $action The action to execute upon the route being requested
 	 * @param string $name (OPTIONAL) The name of the route
 	 */
-	private function __construct($method, $route, $action, $name = null) {
-		$this->method = $method;
-		$this->route = $route;
-		$this->name = $name;
-
-		if ($action != null && (is_callable($action) || is_string($action)))
-			$this->action = $action;
-		else
+	private function __construct($method, $path, $action, $name = null) {
+		//Make sure action is a callable or a valid string that can be parsed later
+		if ($action == null || (!is_callable($action) && !is_string($action)))
 			throw new Exception("The 'action' argument must be of type callable or string and not null.");
+
+		//Store validated data
+		$this->method = $method;
+		$this->path = stripExtraSlashes($path);
+		$this->action = $action;
+		$this->name = $name;
 	}
 
 	/**
@@ -137,8 +180,8 @@ class Route {
 	 *
 	 * @return string The path required for this route
 	 */
-	public function getRoute() {
-		return $this->route;
+	public function getPath() {
+		return $this->path;
 	}
 
 	/**

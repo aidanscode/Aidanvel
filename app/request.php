@@ -28,7 +28,7 @@ class Request {
 	//   Instance logic
 	//--------------------
 
-	private $method, $path;
+	private $method, $path, $parameters, $route;
 
 	/**
 	 * Constructor
@@ -38,7 +38,8 @@ class Request {
 	 */
 	public function __construct(int $method, string $path) {
 		$this->method = $method;
-		$this->path = $path;
+		$this->path = stripExtraSlashes($path);
+		$this->parameters = [];
 	}
 
 	/**
@@ -57,6 +58,42 @@ class Request {
 	 */
 	public function getPath() {
 		return $this->path;
+	}
+
+	/**
+	 * Set the request's parameters
+	 *
+	 * @param array $parameters The parameters supplied with the original request
+	 */
+	public function setParameters(array $parameters) {
+		$this->parameters = $parameters;
+	}
+
+	/**
+	 * Return the request's parameters
+	 *
+	 * @return array The parameters supplied with the original request
+	 */
+	public function getParameters() {
+		return $this->parameters;
+	}
+
+	/**
+	 * Set the request's route
+	 *
+	 * @param Route $route The route called in the request
+	 */
+	public function setRoute(Route $route) {
+		$this->route = $route;
+	}
+
+	/**
+	 * Return the request's route
+	 *
+	 * @return Route The route called by the original request
+	 */
+	public function getRoute() {
+		return $this->route;
 	}
 
 }

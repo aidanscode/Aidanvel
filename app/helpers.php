@@ -69,3 +69,42 @@ function getFunctionFromControllerReference(string $reference) {
 		$methodName
 	];
 }
+
+/**
+ * Strip all leading and ending slashes (/) from a path (string)
+ *
+ * @param string $path The path to be modified
+ * @return string $path The supplied path without any leading or ending slashes (/)
+ */
+function stripExtraSlashes(string $path) {
+	//Keep removing starting slashes until none are left
+	while(substr($path, 0, 1) === '/') {
+		$path = substr($path, 1);
+	}
+
+	//Keep removing ending slashes until none are left
+	while(substr($path, strlen($path) - 1) === '/') {
+		$path = substr($path, 0, strlen($path) - 1);
+	}
+
+	return $path;
+}
+
+/**
+ * Call the given function with the given parameters in the order they're supplied.
+ * If the function's first parameter has a type of Request, the request will be inserted before the supplied parameters
+ *
+ * @param mixed $function The callable function to be called
+ * @param array $parameters The list of parameters to be supplied to the function (can be empty)
+ * @return mixed The return value of the function supplied
+ */
+function callFunctionWithParameters($function, array $parameters) {
+	$closure = Closure::fromCallable($function);
+	$reflection = new ReflectionFunction($closure);
+	$reflectionParams = $reflection->getParameters();
+
+	if (count($reflectionParams) > 0 && $reflectionParams[0]->getType() == 'Request')
+		array_unshift($parameters, Request::getRequest());
+
+	return call_user_func_array($function, $parameters);
+}
