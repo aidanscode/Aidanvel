@@ -28,7 +28,7 @@ class Request {
 	//   Instance logic
 	//--------------------
 
-	private $method, $path, $parameters, $route;
+	private $method, $path, $parameters, $route, $input;
 
 	/**
 	 * Constructor
@@ -40,6 +40,9 @@ class Request {
 		$this->method = $method;
 		$this->path = stripExtraSlashes($path);
 		$this->parameters = [];
+
+		parse_str(file_get_contents("php://input"), $input);
+		$this->input = array_merge($input, $_GET);
 	}
 
 	/**
@@ -94,6 +97,27 @@ class Request {
 	 */
 	public function getRoute() {
 		return $this->route;
+	}
+
+	/**
+	 * Get the value of an input variable of the given key.
+	 * This works for all HTTP method types
+	 *
+	 * @param string $key The key to search for
+	 * @param mixed $default (OPTIONAL) The value to be returned if no value is found under the key, null by default
+	 * @return mixed The value stored under the given key
+	 */
+	public function input(string $key, mixed $default = null) {
+		return $this->input[$key] ?? $default;
+	}
+
+	/**
+	 * Return an array of all input values
+	 *
+	 * @return array An associative array of all input values
+	 */
+	public function all() {
+		return $this->input;
 	}
 
 }
