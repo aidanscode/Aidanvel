@@ -128,6 +128,7 @@ class MethodType {
 	const POST = 1;
 	const PUT = 2;
 	const DELETE = 3;
+	const PATCH = 4;
 
 	/**
 	 * Return the request method as a string
@@ -145,6 +146,8 @@ class MethodType {
 				return "PUT";
 			case self::DELETE:
 				return "DELETE";
+			case self::PATCH:
+				return "PATCH";
 			default:
 				return "";
 		}
@@ -166,6 +169,8 @@ class MethodType {
 				return MethodType::PUT;
 			case 'DELETE':
 				return MethodType::DELETE;
+			case 'PATCH':
+				return MethodType::PATCH;
 			default:
 				return MethodType::GET;
 		}

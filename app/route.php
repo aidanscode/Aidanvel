@@ -76,6 +76,19 @@ class Route {
 	}
 
 	/**
+	 * Declare a PATCH route with the application
+	 *
+	 * @param string $path The request path
+	 * @param mixed $action The action to execute upon the route being requested
+	 * @param string $name (OPTIONAL) The name of the route
+	 *
+	 * @return Route A new instance of the Route class made using the given parameters
+	 */
+	public static function patch(string $path, $action, string $name = null) {
+		return self::declareRoute(MethodType::PATCH, $path, $action, $name);
+	}
+
+	/**
 	 * Return an array of all declared routes
 	 *
 	 * @return array An array of all declared routes
