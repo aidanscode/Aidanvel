@@ -2,7 +2,7 @@
 
 Aidan-vel is a light-weight clone of Laravel created for learning purposes
 
-## Finished Features
+## Completed Features
 
 * Views (basic)
 * Controllers
