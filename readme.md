@@ -9,11 +9,11 @@ Aidan-vel is a light-weight clone of Laravel created for learning purposes
 * Routes (Support for GET, POST, PUT, PATCH, DELETE)
 * Route parameters
 * Easy access to request input ($_GET, $_POST, through one method)
+* Support for method spoofing (so PUT, PATCH, DELETE can be used in forms)
 * etc.
 
 ## Planned Features (TODO)
 
-* Support for method spoofing (so PUT, PATCH, DELETE can be used in forms)
 * Database interaction
     * Models
 * Support for different types of responses (i.e. files)
