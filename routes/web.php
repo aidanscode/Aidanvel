@@ -1,7 +1,11 @@
 <?php
 
+Route::get('/', function() {
+	return Response::download('blueVader.jpg');
+});
+
 Route::delete('/', function() {
-	return "Welcome to /";
+	return "Welcome to DELETE /";
 });
 
 Route::get('/users', function() {
