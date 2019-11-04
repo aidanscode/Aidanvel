@@ -1,6 +1,6 @@
 <?php
 
-Route::get('/', function() {
+Route::delete('/', function() {
 	return "Welcome to /";
 });
 

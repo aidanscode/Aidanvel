@@ -43,6 +43,8 @@ class Request {
 
 		parse_str(file_get_contents("php://input"), $input);
 		$this->input = array_merge($input, $_GET);
+
+		$this->checkMethodSpoof();
 	}
 
 	/**
@@ -52,6 +54,15 @@ class Request {
 	 */
 	public function getMethod() {
 		return $this->method;
+	}
+
+	/**
+	 * Set the request method
+	 *
+	 * @param int $method The request method, using MethodType const
+	 */
+	private function setMethod(int $method) {
+		$this->method = $method;
 	}
 
 	/**
@@ -107,7 +118,7 @@ class Request {
 	 * @param mixed $default (OPTIONAL) The value to be returned if no value is found under the key, null by default
 	 * @return mixed The value stored under the given key
 	 */
-	public function input(string $key, mixed $default = null) {
+	public function input(string $key, $default = null) {
 		return $this->input[$key] ?? $default;
 	}
 
@@ -118,6 +129,25 @@ class Request {
 	 */
 	public function all() {
 		return $this->input;
+	}
+
+	/**
+	 * Check if input includes a _method key, spoof method to that value if so
+	 * This check will only happen if the actual method type was a POST request
+	 */
+	private function checkMethodSpoof() {
+		//Only run this check if the actual method was a POST request
+		if ($this->getMethod() == MethodType::POST) {
+			//Get _method input if exists, default to POST if not
+			$newMethod = $this->input('_method', 'POST');
+
+			//Convert to MethodType enum
+			$newMethod = MethodType::fromString($newMethod);
+
+			//Will be -1 if invalid input
+			if ($newMethod != -1)
+				$this->setMethod($newMethod);
+		}
 	}
 
 }
@@ -172,7 +202,7 @@ class MethodType {
 			case 'PATCH':
 				return MethodType::PATCH;
 			default:
-				return MethodType::GET;
+				return -1;
 		}
 	}
 
