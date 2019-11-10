@@ -1,8 +1,8 @@
 <?php
 
-require 'view.php';
 require 'helpers.php';
 require 'environment.php';
+require 'blade.php';
 require 'request.php';
 require 'route.php';
 require '../routes/web.php';
@@ -20,6 +20,7 @@ class App {
 		self::$instance = $this;
 
 		Env::init();
+		Blade::init();
 	}
 
 	/**
