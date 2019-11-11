@@ -1,6 +1,6 @@
 #Ignore all files in cache directory except .gitkeep (allows the "empty" directory to be tracked by Git)
-/app/cache/*
-!/app/cache/.gitkeep
+/framework/cache/*
+!/framework/cache/.gitkeep
 
 /node_modules
 /public/hot

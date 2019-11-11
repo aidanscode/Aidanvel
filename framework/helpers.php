@@ -28,7 +28,7 @@ function view(string $path, array $vars = []) {
  * @param string $path The path to the file to include. ".php" is automatically added to the name
  */
 function includeController($path) {
-	include '../controllers/' . $path . '.php';
+	include __DIR__ . '/../app/controllers/' . $path . '.php';
 }
 
 /**
