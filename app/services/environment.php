@@ -12,7 +12,7 @@ class Env {
 			new Dotenv\Environment\Adapter\ArrayAdapter()
 		]);
 
-		$env = Dotenv\Dotenv::create(__DIR__ . '/../', null, $factory);
+		$env = Dotenv\Dotenv::create(__DIR__ . '/../../', null, $factory);
 		self::$env = $env->load();
 	}
 

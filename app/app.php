@@ -1,13 +1,13 @@
 <?php
 
 require 'helpers.php';
-require 'environment.php';
-require 'blade.php';
-require 'request.php';
-require 'route.php';
+require 'services/environment.php';
+require 'services/blade.php';
+require 'http/request.php';
+require 'http/route.php';
 require '../routes/web.php';
-require 'error_handler.php';
-require 'response.php';
+require 'http/error_handler.php';
+require 'http/response.php';
 
 class App {
 
